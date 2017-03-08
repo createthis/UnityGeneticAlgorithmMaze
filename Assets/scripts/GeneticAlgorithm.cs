@@ -25,8 +25,19 @@ public class GeneticAlgorithm {
 	}
 
 	public Genome RouletteWheelSelection() {
-		
-		return new Genome ();
+		double slice = Random.value * totalFitnessScore;
+		double total = 0;
+		int selectedGenome = 0;
+
+		for (int i = 0; i < populationSize; i++) {
+			total += genomes [i].fitness;
+
+			if (total > slice) {
+				selectedGenome = i;
+				break;
+			}
+		}
+		return genomes[selectedGenome];
 	}
 
 	public void UpdateFitnessScores() {

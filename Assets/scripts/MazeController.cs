@@ -10,6 +10,7 @@ public class MazeController : MonoBehaviour {
 	public GameObject wallPrefab;
 	public GameObject exitPrefab;
 	public GameObject startPrefab;
+	public GeneticAlgorithm geneticAlgorithm;
 
 	public GameObject PrefabByTile(int tile) {
 		if (tile == 1) return wallPrefab;
@@ -94,10 +95,17 @@ public class MazeController : MonoBehaviour {
 		Populate ();
 		startPosition = new Vector2 (14f, 7f);
 		endPosition = new Vector2 (0f, 2f);
+
+		geneticAlgorithm = new GeneticAlgorithm ();
+		geneticAlgorithm.Run ();
+	}
+
+	public void RenderFittestChromosomePath() {
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if (geneticAlgorithm.busy) geneticAlgorithm.Epoch ();
+		RenderFittestChromosomePath ();
 	}
 }

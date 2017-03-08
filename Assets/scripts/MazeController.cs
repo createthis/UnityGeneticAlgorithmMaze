@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MazeController : MonoBehaviour {
 	public int[,] map;
-	public Vector3 startPosition;
-	public Vector3 endPosition;
+	public Vector2 startPosition;
+	public Vector2 endPosition;
 	public GameObject wallPrefab;
 	public GameObject exitPrefab;
 	public GameObject startPrefab;
@@ -17,8 +18,48 @@ public class MazeController : MonoBehaviour {
 		return null;
 	}
 
-	public int TestRoute(List<int> directions) {
-		return 0;
+	public double TestRoute(List<int> directions) {
+		Vector2 position = startPosition;
+
+		for (int directionIndex = 0; directionIndex < directions.Count; directionIndex++) {
+			int nextDirection = directions [directionIndex];
+
+			switch (directions [directionIndex]) {
+			case 0: // North
+				if (position.y - 1 < 0 || map [(int)(position.y - 1), (int)position.x] == 1) {
+					break;
+				} else {
+					position.y -= 1;
+				}
+				break;
+			case 1: // South
+				if (position.y + 1 >= map.GetLength (0) || map [(int)(position.y + 1), (int)position.x] == 1) {
+					break;
+				} else {
+					position.y += 1;
+				}
+				break;
+			case 2: // East
+				if (position.x + 1 >= map.GetLength (1) || map [(int)position.y, (int)(position.x + 1)] == 1) {
+					break;
+				} else {
+					position.x += 1;
+				}
+				break;
+			case 3: // West
+				if (position.x - 1 < 0 || map [(int)position.y, (int)(position.x - 1)] == 1) {
+					break;
+				} else {
+					position.x -= 1;
+				}
+				break;
+			}
+		}
+
+		Vector2 deltaPosition = new Vector2(
+			Math.Abs(position.x - endPosition.x),
+			Math.Abs(position.y - endPosition.y));
+		return 1/(double)(deltaPosition.x + deltaPosition.y + 1);
 	}
 
 	public void Populate() {
@@ -51,6 +92,8 @@ public class MazeController : MonoBehaviour {
       {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
       };
 		Populate ();
+		startPosition = new Vector2 (14f, 7f);
+		endPosition = new Vector2 (0f, 2f);
 	}
 	
 	// Update is called once per frame

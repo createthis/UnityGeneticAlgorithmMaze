@@ -20,6 +20,13 @@ public class GeneticAlgorithm {
 	public bool busy;
 
 	public void Mutate(List<int> bits) {
+		for (int i = 0; i < bits.Count - 1; i++) {
+			// flip this bit?
+			if (UnityEngine.Random.value < mutationRate) {
+				// flip the bit
+				bits [i] = bits [i] == 0 ? 1 : 0;
+			}
+		}
 	}
 
 	public void Crossover(List<int> mom, List<int> dad, List<int> baby1, List<int> baby2) {

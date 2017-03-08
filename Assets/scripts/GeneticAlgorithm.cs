@@ -10,7 +10,7 @@ public class GeneticAlgorithm {
 	public double crossoverRate = 0.7f;
 	public double mutationRate = 0.001f;
 	public int chromosomeLength = 70;
-	public int geneLength;
+	public int geneLength = 2;
 	public int fittestGenome;
 	public double bestFitnessScore;
 	public double totalFitnessScore;
@@ -18,6 +18,10 @@ public class GeneticAlgorithm {
 	public MazeController mazeController;
 	public MazeController mazeControllerDisplay;
 	public bool busy;
+
+	public GeneticAlgorithm() {
+		busy = false;
+	}
 
 	public void Mutate(List<int> bits) {
 		for (int i = 0; i < bits.Count; i++) {
@@ -69,20 +73,67 @@ public class GeneticAlgorithm {
 	}
 
 	public void UpdateFitnessScores() {
+		fittestGenome = 0;
+		bestFitnessScore = 0;
+		totalFitnessScore = 0;
+
 		for (int i = 0; i < populationSize; i++) {
-			genomes [i].CalculateFitness ();
+			List<int> directions = Decode (genomes [i].bits);
+
+			genomes [i].fitness = mazeController.TestRoute (directions);
+
+			totalFitnessScore += genomes [i].fitness;
+
+			if (genomes [i].fitness > bestFitnessScore) {
+				bestFitnessScore = genomes [i].fitness;
+				fittestGenome = i;
+
+				// Has chromosome found the exit?
+				if (genomes [i].fitness == 1) {
+					busy = false; // stop the run
+				}
+			}
 		}
 	}
 
+	//---------------------------Decode-------------------------------------
+	//
+	//	decodes a List of bits into a List of directions (ints)
+	//
+	//	0=North, 1=South, 2=East, 3=West
+	//-----------------------------------------------------------------------
 	public List<int> Decode(List<int> bits) {
-		return new List<int> ();
+		List<int> directions = new List<int> ();
+
+		for (int geneIndex = 0; geneIndex < bits.Count; geneIndex += geneLength) {
+			List<int> gene = new List<int> ();
+
+			for (int bitIndex = 0; bitIndex < geneLength; bitIndex++) {
+				gene.Add (bits [geneIndex + bitIndex]);
+			}
+
+			directions.Add (GeneToInt (gene));
+		}
+		return directions;
 	}
 
-	public int BinToInt(List<int> value) {
-		return 0;
+	//-------------------------------GeneToInt-------------------------------
+	//	converts a List of bits into an integer
+	//----------------------------------------------------------------------
+	public int GeneToInt(List<int> gene) {
+		int value = 0;
+		int multiplier = 1;
+
+		for (int i = gene.Count; i > 0; i--) {
+			value += gene [i - 1] * multiplier;
+			multiplier *= 2;
+		}
+		return value;
 	}
 
 	public void CreateStartPopulation() {
+		genomes.Clear ();
+
 		for (int i = 0; i < populationSize; i++) {
 			Genome baby = new Genome (chromosomeLength);
 			genomes.Add (baby);
@@ -90,6 +141,8 @@ public class GeneticAlgorithm {
 	}
 
 	public void Run() {
+		CreateStartPopulation ();
+		busy = true;
 	}
 
 	public void Epoch() {

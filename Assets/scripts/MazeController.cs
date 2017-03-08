@@ -17,6 +17,10 @@ public class MazeController : MonoBehaviour {
 		return null;
 	}
 
+	public int TestRoute(List<int> directions) {
+		return 0;
+	}
+
 	public void Populate() {
 		Debug.Log ("length(0)=" + map.GetLength(0));
 		Debug.Log ("length(1)=" + map.GetLength(1));

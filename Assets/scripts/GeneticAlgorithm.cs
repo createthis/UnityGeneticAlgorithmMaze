@@ -5,10 +5,10 @@ using UnityEngine;
 public class GeneticAlgorithm {
 	public List<Genome> genomes;
 
-	public int populationSize;
-	public double crossoverRate;
-	public double mutationRate;
-	public int chromosomeLength;
+	public int populationSize = 140;
+	public double crossoverRate = 0.7f;
+	public double mutationRate = 0.001f;
+	public int chromosomeLength = 70;
 	public int geneLength;
 	public int fittestGenome;
 	public double bestFitnessScore;
@@ -25,6 +25,7 @@ public class GeneticAlgorithm {
 	}
 
 	public Genome RouletteWheelSelection() {
+		
 		return new Genome ();
 	}
 

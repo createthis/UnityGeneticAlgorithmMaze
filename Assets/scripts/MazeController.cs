@@ -8,9 +8,11 @@ public class MazeController : MonoBehaviour {
 	public Vector3 endPosition;
 	public GameObject wallPrefab;
 	public GameObject exitPrefab;
+	public GameObject startPrefab;
 
 	public GameObject PrefabByTile(int tile) {
 		if (tile == 1) return wallPrefab;
+		if (tile == 5) return startPrefab;
 		if (tile == 8) return exitPrefab;
 		return null;
 	}

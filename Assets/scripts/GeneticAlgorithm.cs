@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,10 +23,30 @@ public class GeneticAlgorithm {
 	}
 
 	public void Crossover(List<int> mom, List<int> dad, List<int> baby1, List<int> baby2) {
+		if (UnityEngine.Random.value > crossoverRate || mom == dad) {
+			baby1 = mom;
+			baby2 = dad;
+
+			return;
+		}
+
+		System.Random rnd = new System.Random ();
+
+		int crossoverPoint = rnd.Next (0, chromosomeLength - 1);
+
+		for (int i = 0; i < crossoverPoint; i++) {
+			baby1.Add (mom [i]);
+			baby2.Add (dad [i]);
+		}
+
+		for (int i = crossoverPoint; i < mom.Count - 1; i++) {
+			baby1.Add (dad [i]);
+			baby2.Add (mom [i]);
+		}
 	}
 
 	public Genome RouletteWheelSelection() {
-		double slice = Random.value * totalFitnessScore;
+		double slice = UnityEngine.Random.value * totalFitnessScore;
 		double total = 0;
 		int selectedGenome = 0;
 

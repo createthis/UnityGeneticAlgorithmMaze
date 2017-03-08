@@ -20,7 +20,7 @@ public class GeneticAlgorithm {
 	public bool busy;
 
 	public void Mutate(List<int> bits) {
-		for (int i = 0; i < bits.Count - 1; i++) {
+		for (int i = 0; i < bits.Count; i++) {
 			// flip this bit?
 			if (UnityEngine.Random.value < mutationRate) {
 				// flip the bit
@@ -46,7 +46,7 @@ public class GeneticAlgorithm {
 			baby2.Add (dad [i]);
 		}
 
-		for (int i = crossoverPoint; i < mom.Count - 1; i++) {
+		for (int i = crossoverPoint; i < mom.Count; i++) {
 			baby1.Add (dad [i]);
 			baby2.Add (mom [i]);
 		}
@@ -69,6 +69,9 @@ public class GeneticAlgorithm {
 	}
 
 	public void UpdateFitnessScores() {
+		for (int i = 0; i < populationSize; i++) {
+			genomes [i].CalculateFitness ();
+		}
 	}
 
 	public List<int> Decode(List<int> bits) {
@@ -80,13 +83,40 @@ public class GeneticAlgorithm {
 	}
 
 	public void CreateStartPopulation() {
+		for (int i = 0; i < populationSize; i++) {
+			Genome baby = new Genome (chromosomeLength);
+			genomes.Add (baby);
+		}
 	}
 
 	public void Run() {
 	}
 
 	public void Epoch() {
+		UpdateFitnessScores ();
+
+		int numberOfNewBabies = 0;
+
+		List<Genome> babies = new List<Genome> ();
+		while (numberOfNewBabies < populationSize) {
+			// select 2 parents
+			Genome mom = RouletteWheelSelection ();
+			Genome dad = RouletteWheelSelection ();
+			Genome baby1 = new Genome(chromosomeLength);
+			Genome baby2 = new Genome(chromosomeLength);
+			Crossover (mom.bits, dad.bits, baby1.bits, baby2.bits);
+			Mutate (baby1.bits);
+			Mutate (baby2.bits);
+			babies.Add (baby1);
+			babies.Add (baby2);
+
+			numberOfNewBabies += 2;
+		}
+
+		// overwrite population with babies
+		genomes = babies;
+
+		// increment the generation counter
+		generation++;
 	}
-
-
 }

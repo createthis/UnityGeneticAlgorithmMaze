@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GeneticAlgorithm {
 	public List<Genome> genomes;
+	public List<Genome> lastGenerationGenomes;
+
 
 	public int populationSize = 140;
 	public double crossoverRate = 0.7f;
@@ -21,6 +24,8 @@ public class GeneticAlgorithm {
 
 	public GeneticAlgorithm() {
 		busy = false;
+		genomes = new List<Genome> ();
+		lastGenerationGenomes = new List<Genome> ();
 	}
 
 	public void Mutate(List<int> bits) {
@@ -35,8 +40,8 @@ public class GeneticAlgorithm {
 
 	public void Crossover(List<int> mom, List<int> dad, List<int> baby1, List<int> baby2) {
 		if (UnityEngine.Random.value > crossoverRate || mom == dad) {
-			baby1 = mom;
-			baby2 = dad;
+			baby1.AddRange(mom);
+			baby2.AddRange(dad);
 
 			return;
 		}
@@ -49,7 +54,7 @@ public class GeneticAlgorithm {
 			baby1.Add (mom [i]);
 			baby2.Add (dad [i]);
 		}
-
+			
 		for (int i = crossoverPoint; i < mom.Count; i++) {
 			baby1.Add (dad [i]);
 			baby2.Add (mom [i]);
@@ -91,6 +96,7 @@ public class GeneticAlgorithm {
 				// Has chromosome found the exit?
 				if (genomes [i].fitness == 1) {
 					busy = false; // stop the run
+					return;
 				}
 			}
 		}
@@ -146,8 +152,15 @@ public class GeneticAlgorithm {
 	}
 
 	public void Epoch() {
+		if (!busy) return;
 		UpdateFitnessScores ();
 
+		if (!busy) {
+			lastGenerationGenomes.Clear();
+			lastGenerationGenomes.AddRange (genomes);
+			return;
+		}
+		
 		int numberOfNewBabies = 0;
 
 		List<Genome> babies = new List<Genome> ();
@@ -155,8 +168,8 @@ public class GeneticAlgorithm {
 			// select 2 parents
 			Genome mom = RouletteWheelSelection ();
 			Genome dad = RouletteWheelSelection ();
-			Genome baby1 = new Genome(chromosomeLength);
-			Genome baby2 = new Genome(chromosomeLength);
+			Genome baby1 = new Genome();
+			Genome baby2 = new Genome();
 			Crossover (mom.bits, dad.bits, baby1.bits, baby2.bits);
 			Mutate (baby1.bits);
 			Mutate (baby2.bits);
@@ -166,6 +179,9 @@ public class GeneticAlgorithm {
 			numberOfNewBabies += 2;
 		}
 
+		// save last generation for display purposes
+		lastGenerationGenomes.Clear();
+		lastGenerationGenomes.AddRange (genomes);
 		// overwrite population with babies
 		genomes = babies;
 

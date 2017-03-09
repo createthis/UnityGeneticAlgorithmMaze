@@ -23,5 +23,6 @@ public class Genome {
 
 	private void Initialize() {
 		fitness = 0;
+		bits = new List<int> ();
 	}
 }

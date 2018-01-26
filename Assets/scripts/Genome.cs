@@ -15,9 +15,9 @@ public class Genome {
 		Initialize ();
 
 		for (int i = 0; i < numBits; i++) {
-			System.Random rnd = new System.Random ();
+            		System.Random randomNumberGen = new System.Random(DateTime.Now.GetHashCode() * SystemInfo.processorFrequency.GetHashCode());
 
-			bits.Add (rnd.Next (0, 1));
+		        bits.Add(randomNumberGen.Next(0, 2));
 		}
 	}
 
